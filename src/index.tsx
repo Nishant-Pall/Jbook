@@ -1,7 +1,8 @@
+// we put the esbuild.wasm file in public to make it easy for the browser to fetch the file
 import * as esbuild from "esbuild-wasm";
 import { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
+// import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 
 const App = () => {
     const ref = useRef<any>();
@@ -9,28 +10,39 @@ const App = () => {
     const [code, setCode] = useState("");
 
     const startService = async () => {
-        await esbuild.initialize({
+        // initialization of esbuild-wasm
+        // and get reference to service from esbuild
+        ref.current = await esbuild.startService({
+            // to fetch compiled esbuild.wasm binary from public dir
             worker: true,
             wasmURL: "/esbuild.wasm",
         });
-        ref.current = true;
     };
 
+    // we need to call the startService function only once
     useEffect(() => {
         startService();
     }, []);
 
     const onClick = async () => {
+        // check if we actually have the ref to esbuild
         if (!ref.current) {
             return;
         }
-        const result = await esbuild.build({
-            entryPoints: ["index.js"],
-            bundle: true,
-            write: false,
-            plugins: [unpkgPathPlugin()],
+        // const result = await esbuild.build({
+        //     entryPoints: ["index.js"],
+        //     bundle: true,
+        //     write: false,
+        //     plugins: [unpkgPathPlugin()],
+        // });
+        // setCode(result.outputFiles[0].text);
+
+        // transform function is for handling transpiling only
+        const result = await ref.current.transform(input, {
+            loader: "jsx",
+            target: "es2015",
         });
-        setCode(result.outputFiles[0].text);
+        setCode(result.code);
     };
 
     return (
