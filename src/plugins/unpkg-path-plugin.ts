@@ -1,4 +1,5 @@
 import * as esbuild from "esbuild-wasm";
+import axios from "axios";
 
 // returns a plugin object
 // esbuild is a little more streamlined than webpack
@@ -8,6 +9,7 @@ export const unpkgPathPlugin = () => {
         // name of plugin
         name: "unpkg-path-plugin",
         // setup of plugin, called automatically called by esbuild as build
+        // build refers to process of processing a file
         setup(build: esbuild.PluginBuild) {
             // overrides natural build process of trying to figure out
             // the path of the file, it will prevent esbuild to look
@@ -18,10 +20,19 @@ export const unpkgPathPlugin = () => {
             // for TypeScript --> filter: '/.ts/
             // for CSS --> filter: '/.css/
             build.onResolve({ filter: /.*/ }, async (args: any) => {
-                // console.log("onResolve", args);
+                console.log("onResolve", args);
                 // onLoad or any other functions will only
                 // work on files with namespace a
-                return { path: args.path, namespace: "a" };
+                // importer is the destination of the file from
+                // which we're importing the package
+                if (args.path === "index.js") {
+                    return { path: args.path, namespace: "a" };
+                } else if (args.path === "tiny-test-pkg") {
+                    return {
+                        path: "https://unpkg.com/tiny-test-pkg@1.0.0/index.js",
+                        namespace: "a",
+                    };
+                }
             });
             // attempts to load up a file
             // also overrides the natural loading a file
@@ -29,23 +40,25 @@ export const unpkgPathPlugin = () => {
             build.onLoad(
                 { filter: /.*/, namespace: "a" },
                 async (args: any) => {
-                    // console.log("onLoad", args);
+                    console.log("onLoad", args);
 
                     // custom object we return onLoad
                     if (args.path === "index.js") {
                         return {
                             loader: "jsx",
                             contents: `
-              import message from './message';
+              const message = require('tiny-test-pkg') ;
               console.log(message);
             `,
                         };
-                    } else {
-                        return {
-                            loader: "jsx",
-                            contents: 'export default "hi there!"',
-                        };
                     }
+
+                    // axios get request to get the contents of the file
+                    const { data } = await axios.get(args.path);
+                    return {
+                        loader: "jsx",
+                        contents: data,
+                    };
                 }
             );
         },
