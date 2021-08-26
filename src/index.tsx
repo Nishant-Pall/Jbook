@@ -2,7 +2,7 @@
 import * as esbuild from "esbuild-wasm";
 import { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-// import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
+import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 
 const App = () => {
     const ref = useRef<any>();
@@ -29,20 +29,24 @@ const App = () => {
         if (!ref.current) {
             return;
         }
-        // const result = await esbuild.build({
-        //     entryPoints: ["index.js"],
-        //     bundle: true,
-        //     write: false,
-        //     plugins: [unpkgPathPlugin()],
-        // });
-        // setCode(result.outputFiles[0].text);
+
+        const result = await ref.current.build({
+            // entrypoint that will look into the first file
+            entryPoints: ["index.js"],
+            // set bundling as true
+            bundle: true,
+            write: false,
+            //  unpkgPathPlugin as a plugin
+            plugins: [unpkgPathPlugin()],
+        });
+        setCode(result.outputFiles[0].text);
 
         // transform function is for handling transpiling only
-        const result = await ref.current.transform(input, {
-            loader: "jsx",
-            target: "es2015",
-        });
-        setCode(result.code);
+        // const result = await ref.current.transform(input, {
+        //     loader: "jsx",
+        //     target: "es2015",
+        // });
+        // setCode(result.code);
     };
 
     return (
