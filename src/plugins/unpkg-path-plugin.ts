@@ -1,6 +1,12 @@
 import * as esbuild from "esbuild-wasm";
 import axios from "axios";
+import localForage from "localforage";
 
+// fileCache is used to set item or get items from the database
+// localforage is a library for indexedDB
+const fileCache = localForage.createInstance({
+    name: "filecache",
+});
 // returns a plugin object
 // esbuild is a little more streamlined than webpack
 // in terms of time and space efficiency
