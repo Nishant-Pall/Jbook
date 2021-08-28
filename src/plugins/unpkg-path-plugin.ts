@@ -10,7 +10,7 @@ const fileCache = localForage.createInstance({
 // returns a plugin object
 // esbuild is a little more streamlined than webpack
 // in terms of time and space efficiency
-export const unpkgPathPlugin = () => {
+export const unpkgPathPlugin = (inputCode: string) => {
     return {
         // name of plugin
         name: "unpkg-path-plugin",
@@ -76,10 +76,7 @@ export const unpkgPathPlugin = () => {
                     if (args.path === "index.js") {
                         return {
                             loader: "jsx",
-                            contents: `
-            import React from 'react';
-              console.log(React);
-            `,
+                            contents: inputCode,
                         };
                     }
 

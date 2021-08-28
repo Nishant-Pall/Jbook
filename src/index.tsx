@@ -38,7 +38,7 @@ const App = () => {
             bundle: true,
             write: false,
             //  unpkgPathPlugin as a plugin
-            plugins: [unpkgPathPlugin()],
+            plugins: [unpkgPathPlugin(input)],
             // defining some variables at the time of bundling
             define: {
                 "process.env.NODE_ENV": '"production"',
