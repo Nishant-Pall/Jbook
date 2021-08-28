@@ -3,6 +3,7 @@ import * as esbuild from "esbuild-wasm";
 import { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
+import { fetchPlugin } from "./plugins/fetch-plugin";
 
 const App = () => {
     const ref = useRef<any>();
@@ -37,8 +38,8 @@ const App = () => {
             // set bundling as true
             bundle: true,
             write: false,
-            //  unpkgPathPlugin as a plugin
-            plugins: [unpkgPathPlugin(input)],
+            // calling plugins from left to right
+            plugins: [unpkgPathPlugin(), fetchPlugin(input)],
             // defining some variables at the time of bundling
             define: {
                 "process.env.NODE_ENV": '"production"',
