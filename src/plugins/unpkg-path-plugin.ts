@@ -18,8 +18,6 @@ export const unpkgPathPlugin = () => {
             // filter is an re, we can make different onResolve
             // functions depending upon the type of files we want to load
             // eg. for Javascript --> filter: '/.js/
-            // for TypeScript --> filter: '/.ts/
-            // for CSS --> filter: '/.css/
             build.onResolve({ filter: /.*/ }, async (args: any) => {
                 console.log("onResolve", args);
 
