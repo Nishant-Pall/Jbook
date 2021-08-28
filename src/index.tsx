@@ -9,6 +9,7 @@ const App = () => {
     const [input, setInput] = useState("");
     const [code, setCode] = useState("");
 
+    // Async function to start the esbuild service
     const startService = async () => {
         // initialization of esbuild-wasm
         // and get reference to service from esbuild
@@ -44,6 +45,8 @@ const App = () => {
                 global: "window",
             },
         });
+        // fetch the output bundled code
+        // and set it to state
         setCode(result.outputFiles[0].text);
 
         // transform function is for handling transpiling only
