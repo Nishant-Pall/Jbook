@@ -55,10 +55,32 @@ export const fetchPlugin = (inputCode: string) => {
 
                     // axios get request to get the contents of the file
                     const { data, request } = await axios.get(args.path);
+
+                    const fileType = args.path.match(/.css$/) ? "css" : "jsx";
+
+                    // filtering the fetched css to avoid conflicts with js
+                    const escaped = data
+                        //  new lines escaped
+                        .replace(/\n/g, "")
+                        //  double quotes escaped
+                        .replace(/"/g, '\\"')
+                        // single quotes escaped
+                        .replace(/'/g, "\\'");
+                    // get css and wrap it into javascript
+                    // and append into style element inside the head tag
+                    const contents =
+                        fileType === "css"
+                            ? `
+                        const style = document.createElement('style');
+                        style.innerText = '${escaped}';
+                        document.head.appendChild(style);
+                    `
+                            : data;
+
                     // result should be of type esbuild.onLoadResult
                     const result: esbuild.OnLoadResult = {
                         loader: "jsx",
-                        contents: data,
+                        contents,
                         // will return the path of the last importer to maintain
                         // persistence of path from unpkg modules
                         resolveDir: new URL("./", request.responseURL).pathname,
