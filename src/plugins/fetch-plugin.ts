@@ -34,7 +34,9 @@ export const fetchPlugin = (inputCode: string) => {
                     contents: inputCode,
                 };
             });
-            build.onLoad({ filter: /.css$/ }, async (args: any) => {
+            // if we dont return anything, esbuild will just carry
+            // on executing other onLoads until it gets a returned value
+            build.onLoad({ filter: /.*/ }, async (args: any) => {
                 const cachedResult =
                     await fileCache.getItem<esbuild.OnLoadResult>(args.path);
 
@@ -42,6 +44,8 @@ export const fetchPlugin = (inputCode: string) => {
                 if (cachedResult) {
                     return cachedResult;
                 }
+            });
+            build.onLoad({ filter: /.css$/ }, async (args: any) => {
                 // axios get request to get the contents of the file
                 const { data, request } = await axios.get(args.path);
 
@@ -79,19 +83,6 @@ export const fetchPlugin = (inputCode: string) => {
                 { filter: /.*/, namespace: "a" },
                 async (args: any) => {
                     console.log("onLoad", args);
-
-                    // Check if we have already fetched this file
-                    // getItem is a generic, means cachedResult should be of type
-                    // esbuild.onLoadResult
-                    const cachedResult =
-                        await fileCache.getItem<esbuild.OnLoadResult>(
-                            args.path
-                        );
-
-                    // if it is in cache return it
-                    if (cachedResult) {
-                        return cachedResult;
-                    }
 
                     // axios get request to get the contents of the file
                     const { data, request } = await axios.get(args.path);
