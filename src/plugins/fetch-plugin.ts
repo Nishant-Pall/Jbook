@@ -27,18 +27,58 @@ export const fetchPlugin = (inputCode: string) => {
     return {
         name: "fetch-plugin",
         setup(build: esbuild.PluginBuild) {
+            build.onLoad({ filter: /(^index\.js$)/ }, () => {
+                // custom object we return onLoad
+                return {
+                    loader: "jsx",
+                    contents: inputCode,
+                };
+            });
+            build.onLoad({ filter: /.css$/ }, async (args: any) => {
+                const cachedResult =
+                    await fileCache.getItem<esbuild.OnLoadResult>(args.path);
+
+                // if it is in cache return it
+                if (cachedResult) {
+                    return cachedResult;
+                }
+                // axios get request to get the contents of the file
+                const { data, request } = await axios.get(args.path);
+
+                // filtering the fetched css to avoid conflicts with js
+                const escaped = data
+                    //  new lines escaped
+                    .replace(/\n/g, "")
+                    //  double quotes escaped
+                    .replace(/"/g, '\\"')
+                    // single quotes escaped
+                    .replace(/'/g, "\\'");
+                // get css and wrap it into javascript
+                // and append into style element inside the head tag
+                const contents = `
+                        const style = document.createElement('style');
+                        style.innerText = '${escaped}';
+                        document.head.appendChild(style);
+                    `;
+
+                // result should be of type esbuild.onLoadResult
+                const result: esbuild.OnLoadResult = {
+                    loader: "jsx",
+                    contents,
+                    // will return the path of the last importer to maintain
+                    // persistence of path from unpkg modules
+                    resolveDir: new URL("./", request.responseURL).pathname,
+                };
+
+                // store response in cache
+                await fileCache.setItem(args.path, result);
+
+                return result;
+            });
             build.onLoad(
                 { filter: /.*/, namespace: "a" },
                 async (args: any) => {
                     console.log("onLoad", args);
-
-                    // custom object we return onLoad
-                    if (args.path === "index.js") {
-                        return {
-                            loader: "jsx",
-                            contents: inputCode,
-                        };
-                    }
 
                     // Check if we have already fetched this file
                     // getItem is a generic, means cachedResult should be of type
@@ -56,31 +96,10 @@ export const fetchPlugin = (inputCode: string) => {
                     // axios get request to get the contents of the file
                     const { data, request } = await axios.get(args.path);
 
-                    const fileType = args.path.match(/.css$/) ? "css" : "jsx";
-
-                    // filtering the fetched css to avoid conflicts with js
-                    const escaped = data
-                        //  new lines escaped
-                        .replace(/\n/g, "")
-                        //  double quotes escaped
-                        .replace(/"/g, '\\"')
-                        // single quotes escaped
-                        .replace(/'/g, "\\'");
-                    // get css and wrap it into javascript
-                    // and append into style element inside the head tag
-                    const contents =
-                        fileType === "css"
-                            ? `
-                        const style = document.createElement('style');
-                        style.innerText = '${escaped}';
-                        document.head.appendChild(style);
-                    `
-                            : data;
-
                     // result should be of type esbuild.onLoadResult
                     const result: esbuild.OnLoadResult = {
                         loader: "jsx",
-                        contents,
+                        contents: data,
                         // will return the path of the last importer to maintain
                         // persistence of path from unpkg modules
                         resolveDir: new URL("./", request.responseURL).pathname,
