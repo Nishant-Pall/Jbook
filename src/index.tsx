@@ -1,4 +1,5 @@
 // we put the esbuild.wasm file in public to make it easy for the browser to fetch the file
+import "bulmaswatch/slate/bulmaswatch.min.css";
 import * as esbuild from "esbuild-wasm";
 import { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
