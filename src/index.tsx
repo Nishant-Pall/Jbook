@@ -32,6 +32,7 @@ const App = () => {
             return;
         }
 
+        // resetting the source doc as html after every onClick to restore state of iframe
         iframe.current.srcdoc = html;
 
         const result = await ref.current.build({
