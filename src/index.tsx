@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 import { fetchPlugin } from "./plugins/fetch-plugin";
+import CodeEdtior from "./components/code-editor";
 
 const App = () => {
     const ref = useRef<any>();
@@ -79,6 +80,7 @@ const App = () => {
 `;
     return (
         <div>
+            <CodeEdtior />
             <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
