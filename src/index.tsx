@@ -58,6 +58,11 @@ const App = () => {
         // setCode(result.code);
     };
 
+    const html = `
+    <script>
+        ${code}
+    </script>
+`;
     return (
         <div>
             <textarea
@@ -68,8 +73,14 @@ const App = () => {
                 <button onClick={onClick}>Submit</button>
             </div>
             <pre>{code}</pre>
+            <iframe srcDoc={html} sandbox="allow-scripts" />
         </div>
     );
 };
+
+// sandbox="" ensures blocking a frame (child) with origin "null"
+// from accessing a cross origin frame (parent)
+// this works as a two way street
+// sandbox="allow-same-origin" ensures access
 
 ReactDOM.render(<App />, document.querySelector("#root"));
