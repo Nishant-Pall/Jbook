@@ -9,8 +9,9 @@ const CodeEdtior = () => {
                 showUnused: false,
                 folding: false,
                 lineNumbersMinChars: 3,
-                fontSize: 18,
+                fontSize: 16,
                 scrollBeyondLastLine: false,
+                automaticLayout: true,
             }}
             theme="dark"
             language="javascript"
