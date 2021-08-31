@@ -33,6 +33,8 @@ const App = () => {
             return;
         }
 
+        iframe.current.srcdoc = html;
+
         const result = await ref.current.build({
             // entrypoint that will look into the first file
             entryPoints: ["index.js"],
