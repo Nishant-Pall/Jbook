@@ -1,8 +1,11 @@
 import MonacoEditor, { EditorDidMount } from "@monaco-editor/react";
+import codeShift from "jscodeshift";
+import Highlighter from "monaco-jsx-highlighter";
 import prettier from "prettier";
 import parser from "prettier/parser-babel";
 import { useRef } from "react";
 import "./code-editor.css";
+import "./syntax.css";
 
 interface CodeEditorProps {
     initialValue: string;
@@ -18,6 +21,22 @@ const CodeEdtior: React.FC<CodeEditorProps> = ({ initialValue, onChange }) => {
             onChange(getValue());
         });
         monacoEditor.getModel()?.updateOptions({ tabSize: 4 });
+
+        const highlighter = new Highlighter(
+            // to not typecheck the line
+            // @ts-ignore
+            window.moncao,
+            codeShift,
+            monacoEditor
+        );
+
+        // Weird code just to avoid logging of errors in console
+        highlighter.highLightOnDidChangeModelContent(
+            () => {},
+            () => {},
+            undefined,
+            () => {}
+        );
     };
     const onFormatClick = () => {
         // get current value from editor
