@@ -1,11 +1,12 @@
 import { useState } from "react";
-import CodeEdtior from "./code-editor";
+import CodeEditor from "./code-editor";
 import Preview from "./preview";
 import bundle from "../bundler";
 import Resizable from "./resizable";
+
 const CodeCell = () => {
-    const [input, setInput] = useState("");
     const [code, setCode] = useState("");
+    const [input, setInput] = useState("");
 
     const onClick = async () => {
         const output = await bundle(input);
@@ -21,19 +22,16 @@ const CodeCell = () => {
                     flexDirection: "row",
                 }}
             >
-                <CodeEdtior
-                    initialValue="const a = 1"
-                    onChange={(value) => setInput(value)}
-                />
+                <Resizable direction="horizontal">
+                    <CodeEditor
+                        initialValue="const a = 1;"
+                        onChange={(value) => setInput(value)}
+                    />
+                </Resizable>
                 <Preview code={code} />
             </div>
         </Resizable>
     );
 };
-
-// sandbox="" ensures blocking a frame (child) with origin "null"
-// from accessing a cross origin frame (parent)
-// this works as a two way street
-// sandbox="allow-same-origin" ensures access
 
 export default CodeCell;

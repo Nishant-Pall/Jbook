@@ -1,14 +1,16 @@
-.iframe-wrapper {
+.preview-wrapper {
     position: relative;
+    flex-grow: 1;
     height: 100%;
 }
 
-.iframe-wrapper iframe {
+.preview-wrapper iframe {
+    height: 100%;
+    width: 100%;
     background-color: white;
-    height: 100%;
 }
 
-.react-draggable-transparent-selection .iframe-wrapper:after {
+.react-draggable-transparent-selection .preview-wrapper:after {
     content: "";
     position: absolute;
     top: 0;
