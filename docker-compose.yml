@@ -6,5 +6,5 @@ services:
         image: jbook-app
         build: .
         ports:
-            - 3000:3000
+            - "3000:3000"
         command: npm run dev
