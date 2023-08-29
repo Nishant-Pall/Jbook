@@ -3,7 +3,7 @@ app-build:
 build:app-build
 
 app-shell:
-	docker-compose exec -it jbook-app /bin/bash
+	docker-compose exec -it app /bin/sh
 shell:app-shell
 
 app-run:
