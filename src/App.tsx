@@ -10,8 +10,6 @@ function App() {
 
   return (
     <>
-      <div>
-      </div>
       <h1>JBOOK</h1>
       <div className="card">
         <button onClick={increaseCount}>
