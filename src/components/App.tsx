@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import './App.css';
+import './Editor';
+import Editor from './Editor';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -12,6 +14,9 @@ function App() {
     <>
       <h1>JBOOK</h1>
       <div className="card">
+        <div>
+          <Editor />
+        </div>
         <button onClick={increaseCount}>
           count is {count}
         </button>
