@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import Editor from './Editor';
 import './App.css';
 import './Editor';
-import Editor from './Editor';
 
 function App() {
   const [count, setCount] = useState(0);
